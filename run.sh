@@ -7,6 +7,7 @@ function self_path() {
 BASE=$( dirname $( self_path ) );
 
 docker build -t smtp . && \
+echo "" | tee $BASE/var/log/{dovecot,postfix,spamassassin}.log && \
 docker container run \
   --network main \
   -p 993:993 \
@@ -15,6 +16,7 @@ docker container run \
   -p 587:25 \
   -v $BASE/var/log/dovecot.log:/var/log/dovecot.log \
   -v $BASE/var/log/postfix.log:/var/log/postfix.log \
+  -v $BASE/var/log/spamassassin.log:/var/log/spamassassin.log \
   -v $BASE/var/mail/vhosts:/var/mail/vhosts \
   -d \
   --rm \
