@@ -21,7 +21,6 @@ readme_directory = no
 compatibility_level = 2
 
 # SMTPD (i.e. incoming SMTP)
-
 smtpd_tls_cert_file=/etc/ssl/cert.pem
 smtpd_tls_key_file=/etc/ssl/key.key
 smtpd_use_tls=yes
