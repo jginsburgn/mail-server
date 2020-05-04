@@ -18,6 +18,8 @@ docker container run \
   -v $BASE/var/log/postfix.log:/var/log/postfix.log \
   -v $BASE/var/log/spamassassin.log:/var/log/spamassassin.log \
   -v $BASE/var/mail/vhosts:/var/mail/vhosts \
+  -v /etc/localtime:/etc/localtime:ro \
+  -v /etc/timezone:/etc/timezone:ro \
   -d \
   --rm \
   --name smtp \
