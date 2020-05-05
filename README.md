@@ -40,7 +40,12 @@ After a modification to one of the files do: `service dovecot restart` or `servi
 
 ## Migrating existing maildirs
 
-First `gunzip` all files in the old maildir (or add Zlib plugin to dovecot; see TODOs). Then make sure that the file name of each SMTP mail reflects the correct mail size. Then run: `doveadm import -u "destination email" "maildir:/maildir/location" "" all`
+Just copy the contents of the `cur` subdirectories in the source Mailbox to the target (do not forget to use `-p` to preserve timestamps and then `chown` to correcto use):
+
+```bash
+cp -p source/mailbox/.spam/cur/* target/mailbox/.Spam/cur
+chown -R dovecot:dovecot target/mailbox
+```
 
 ## TODOs
 
