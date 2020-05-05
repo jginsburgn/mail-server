@@ -1,0 +1,8 @@
+# Mailing list
+# support@example.com adam@example.com,bob@example.com
+
+# Domain catchall address
+# @example.com adam@example.com
+
+# Alias
+# adam@example.com bob@example.com

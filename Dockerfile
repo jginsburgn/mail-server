@@ -25,7 +25,7 @@ RUN chown -R dovecot:dovecot /etc/dovecot/sieve
 WORKDIR /etc/postfix
 RUN postmap aliases
 RUN postmap mailboxes
-RUN postmap sasl_passwd
+RUN postmap relay-sasl
 WORKDIR /
 
 COPY entrypoint.sh /

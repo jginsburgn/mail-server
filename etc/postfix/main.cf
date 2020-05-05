@@ -5,6 +5,7 @@
 # is /etc/mailname.
 #myorigin = /etc/mailname
 
+myhostname =
 smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
 biff = no
 
@@ -22,7 +23,7 @@ compatibility_level = 2
 
 # SMTPD (i.e. incoming SMTP)
 smtpd_tls_cert_file=/etc/ssl/cert.pem
-smtpd_tls_key_file=/etc/ssl/key.key
+smtpd_tls_key_file=/etc/ssl/key.pem
 smtpd_use_tls=yes
 smtpd_tls_auth_only = yes
 smtpd_tls_security_level = encrypt
@@ -38,19 +39,14 @@ smtpd_relay_restrictions =
 
 # SMTP (i.e. outgoing SMTP)
 smtp_sasl_auth_enable = yes
-smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_password_maps = hash:/etc/postfix/relay-sasl
 smtp_sasl_security_options = noanonymous
 smtp_sasl_tls_security_options = noanonymous
 smtp_tls_security_level = encrypt
 header_size_limit = 4096000
-
-# See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
-# information on enabling SSL in the smtp client.
-
 alias_database = hash:/etc/postfix/aliases
-mydestination = $myhostname, localhost.localdomain, localhost
 relayhost = [mail.example.com]:587
-mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+mynetworks = 127.0.0.0/8
 mailbox_size_limit = 0
 recipient_delimiter = +
 inet_interfaces = all
