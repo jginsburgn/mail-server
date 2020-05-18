@@ -25,6 +25,7 @@ RUN chown -R dovecot:dovecot /etc/dovecot/sieve
 WORKDIR /etc/postfix
 RUN postmap aliases
 RUN postmap mailboxes
+RUN postmap domains
 RUN postmap relay-sasl
 WORKDIR /
 

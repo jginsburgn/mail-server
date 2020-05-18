@@ -31,13 +31,7 @@ All exposed services in this image rely on TLS. Therefore, a certificate in PEM 
 
 After a modification to one of the files do: `service dovecot restart`, `service postfix restart` or `service spamassassin restart` as needed. Most relevant configuration files are:
 
-### `/etc/postfix/`
-
-#### `main.cf`
-
-- `hostname`: a string for greeting clients (e.g. `example.com`)
-- `relayhost`: the relay destination (e.g. [smtp.sendgrid.net]:587)
-- `virtual_mailbox_domains`: a space separated list of domains for receiving email (e.g. `example.com example1.com`)
+### `/etc/postfix/↴`
 
 #### [`aliases`](http://www.postfix.org/virtual.5.html)
 
@@ -63,6 +57,43 @@ cd /etc/postfix
 postmap aliases
 ```
 
+#### `domains`
+
+Domains that are final destination for this SMTP server. The in the table key is the domain; note that the value in the table is not used.
+
+Example:
+
+```
+example1.com .
+example2.com .
+example3.com .
+```
+
+After modyfing do:
+
+```
+cd /etc/postfix
+postmap domains
+```
+
+#### `mailboxes`
+
+Users for the corresponding domains that have mailboxes. The key in the table is the user; note that the value in the table is not used.
+
+Example:
+
+```
+adam@example1.com adam
+bob@example2.com bo
+```
+
+After modyfing do:
+
+```
+cd /etc/postfix
+postmap mailboxes
+```
+
 #### `relay-sasl`
 
 The authentication credentials for relay hosts. Entries are of the form:
@@ -82,19 +113,69 @@ postmap relay-sasl
 
 The service definition file for postfix.
 
-### `/etc/dovecot/conf.d/10-mail.conf`
+#### `main.cf`
 
-### `/etc/dovecot/conf.d/10-master.conf`
+- `hostname`: a string for greeting clients (e.g. `example.com`)
+- `relayhost`: the relay destination (e.g. [smtp.sendgrid.net]:587)
+- `virtual_mailbox_domains`: a space separated list of domains for receiving email (e.g. `example.com example1.com`)
 
-### `/etc/dovecot/conf.d/10-logging.conf`
+### `/etc/dovecot/conf.d/↴`
 
-### `/etc/dovecot/conf.d/10-auth.conf`
+#### `10-auth.conf`
 
-### `/etc/dovecot/conf.d/10-ssl.conf`
+Authentication processes.
 
-### `/etc/dovecot/conf.d/auth-passwdfile.conf.ext`
+#### `10-logging.conf`
 
-### `/etc/dovecot/dovecot.conf`
+Log destination.
+
+#### `10-mail.conf`
+
+Mailbox locations and namespaces.
+
+#### `10-master.conf`
+
+Services configuration (e.g. LMTP, IMAP, etc.).
+
+#### `10-ssl.conf`
+
+SSL settings.
+
+#### `15-mailboxes.conf`
+
+Mailbox definitions.
+
+#### `20-lmtp.conf`
+
+LMTP specific settings.
+
+#### `90-plugin.conf`
+
+Plugin settings.
+
+#### `90-sieve.conf`
+
+Settings for the Sieve interpreter.
+
+#### `auth-passwdfile.conf.ext`
+
+Authentication for passwd-file users.
+
+### `/etc/dovecot/↴`
+
+#### `dovecot.conf`
+
+Configuration entry point for Dovecot.
+
+#### `users`
+
+Incoming mail SASL database. Format is comparable to that of `/etc/passwd` files.
+
+### `/etc/dovecot/sieve/↴`
+
+#### `default.sieve`
+
+A sieve script to deliver spam email (marked by spamassassin) to the corresponding user mailbox (i.e. Junk).
 
 ## Migrating existing maildirs
 
@@ -103,6 +184,35 @@ Just copy the contents of the `cur` subdirectories in the source Mailbox to the 
 ```bash
 cp -p source/mailbox/.spam/cur/* target/mailbox/.Spam/cur
 chown -R dovecot:dovecot target/mailbox
+```
+
+## Testing an SMTP with TLS session
+
+Run `openssl` follows:
+
+```
+openssl s_client -starttls smtp -crlf -quiet -connect example.com:587
+```
+
+And, complete an `SMTP` session as follows:
+
+```
+HELO example1.com
+250 example.com
+MAIL FROM: <adam@example1.com>
+250 2.1.0 Ok
+RCPT TO: <bob@exmaple.com>
+250 2.1.5 Ok
+DATA
+354 End data with <CR><LF>.<CR><LF>
+From: Adam Doe <adam@example.com>
+To: Bob Adams <bob@example1.com>
+Subject: What is this?
+It is an email, duh!
+.
+250 2.0.0 Ok: queued as 969DE121947
+QUIT
+221 2.0.0 Bye
 ```
 
 ## TODOs
