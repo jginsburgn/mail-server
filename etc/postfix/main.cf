@@ -1,0 +1,63 @@
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+# Debian specific:  Specifying a file name will cause the first
+# line of that file to be used as the name.  The Debian default
+# is /etc/mailname.
+#myorigin = /etc/mailname
+
+myhostname =
+smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
+
+readme_directory = no
+
+# See http://www.postfix.org/COMPATIBILITY_README.html -- default to 2 on
+# fresh installs.
+compatibility_level = 2
+
+# SMTPD (i.e. incoming SMTP)
+smtpd_tls_cert_file=/etc/ssl/cert.pem
+smtpd_tls_key_file=/etc/ssl/key.pem
+smtpd_use_tls=yes
+smtpd_tls_auth_only = yes
+smtpd_tls_security_level = encrypt
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = private/auth
+smtpd_sasl_auth_enable = yes
+smtpd_relay_restrictions = 
+  permit_mynetworks,
+  permit_sasl_authenticated,
+  permit_auth_destination,
+  reject_unauth_destination,
+  reject
+
+# SMTP (i.e. outgoing SMTP)
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/relay-sasl
+smtp_sasl_security_options = noanonymous
+smtp_sasl_tls_security_options = noanonymous
+smtp_tls_security_level = encrypt
+header_size_limit = 4096000
+alias_database = hash:/etc/postfix/aliases
+relayhost = [mail.example.com]:587
+mynetworks = 127.0.0.0/8
+mailbox_size_limit = 0
+recipient_delimiter = +
+inet_interfaces = all
+inet_protocols = all
+
+# Virtual Mailbox
+virtual_alias_maps = hash:/etc/postfix/aliases
+virtual_mailbox_domains = hash:/etc/postfix/domains
+virtual_mailbox_maps = hash:/etc/postfix/mailboxes
+virtual_transport = lmtp:unix:private/dovecot-lmtp
+
+# Logging
+maillog_file = /var/log/postfix.log
+#debug_peer_level = 4
